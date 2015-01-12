@@ -1,10 +1,9 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'library_app.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+from library import views
 
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('',
+    url(r'^library/', include('library.urls')),
+    url(r'^admin/', include(admin.site.urls))
 )

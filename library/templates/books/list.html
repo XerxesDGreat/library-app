@@ -1,0 +1,46 @@
+<html>
+	<body>
+		<table>
+			<thead>
+				<tr>
+					<th>
+						Id
+					</th>
+					<th>
+						Title
+					</th>
+					<th>
+						Author
+					</th>
+					<th>
+						Published
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for book in item_list %}
+				<tr>
+					<td>
+						{{ book.id }}
+					</td>
+					<td>
+						{{ book.title }}
+					</td>
+					<td>
+						{{ book.author.full_name }}
+					</td>
+					<td>
+						{{ book.published }}
+					</td>
+				</tr>
+				{% empty %}
+				<tr>
+					<td colspan="4">
+						No books
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</body>
+</html>
