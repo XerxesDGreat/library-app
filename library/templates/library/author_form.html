@@ -1,0 +1,22 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | {% if author %}Add Author{% else %}Edit Author{% endif %}
+{% endblock %}
+
+{% block page_first_header %}
+	{% if author == None %}Add Author{% else %}Edit Author "{{ author.full_name }}"{% endif %}
+{% endblock %}
+
+{% block content %}
+	<form action="{% if author %}{% url 'library:author_update' book.id %}{% else %}{% url 'library:author_add' %}{% endif %}" method="post">
+		{% csrf_token %}
+		{% for field in form %}
+			<div class="field_wrapper">
+				{{ field.errors }}
+				{{ field.label_tag }} {{ field }}
+			</div>
+		{% endfor %}
+		<input type="submit" value="Create" />
+	</form>
+{% endblock %}

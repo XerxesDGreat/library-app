@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
@@ -6,6 +7,9 @@ class Person(models.Model):
     
     def full_name(self):
         return " ".join((self.first_name, self.last_name))
+    
+    def __str__(self):
+        return '%s %s' % (self.first_name, self.last_name)
     
     class Meta:
         abstract = True
@@ -19,7 +23,11 @@ class Book(models.Model):
     author = models.ForeignKey(Author)
     published = models.DateField()
     
+    def __str__(self):
+        return '%s (%s)' % (self.title, datetime.strftime(self.published, "%Y"))
+    
 class Student(Person):
+    grade = models.CharField(max_length=6)
     pass
 
 class Checkout(models.Model):
@@ -32,4 +40,4 @@ class Rating(models.Model):
     student = models.ForeignKey(Student)
     book = models.ForeignKey(Book)
     rating = models.IntegerField()
-    comments = models.TextField()
+    comments = models.TextField(blank=True, null=True)

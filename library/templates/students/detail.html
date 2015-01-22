@@ -1,0 +1,19 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | Edit Student
+{% endblock %}
+
+{% block page_first_header %}
+	Edit Student "{{ student.full_name }}"
+{% endblock %}
+
+{% block content %}
+	{% if error_message %}
+	<div class="errors">
+		{{ error_message }}
+	</div>
+	<form action="{% url 'library:student_detail' student.id %}" method="post">
+		{{ formset }}
+	</form>
+{% endblock %}

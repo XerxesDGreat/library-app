@@ -47,6 +47,12 @@ coverage.xml
 # Django stuff:
 *.log
 
+# this app stuff
+db.sqlite3
+
+# Potentially sensitive data
+library/fixtures/students.json
+
 # Sphinx documentation
 docs/_build/
 

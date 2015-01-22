@@ -1,20 +1,18 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | Book Listing
+	{{ block.super }} | Author Listing
 {% endblock %}
 
 {% block page_first_header %}
-	Book Listing
+	Author Listing
 {% endblock %}
 
 {% block content %}
 {% if is_paginated %}
 {% include 'generic/snippets/pagination.html' %}
 {% endif %}
-<div class="general_actions">
-<a href="{% url 'library:book_create' %}">new book</a>
-</div>
+<a href="{% url 'library:author_add' %}">Add author</a>
 <table class="listing_table">
 	<thead>
 		<tr>
@@ -22,36 +20,30 @@
 				Id
 			</th>
 			<th>
-				Title
+				Last Name
 			</th>
 			<th>
-				Author
-			</th>
-			<th style="width: 10%">
-				Published
+				First Name
 			</th>
 		</tr>
 	</thead>
 	<tbody>
-		{% for book in item_list %}
+		{% for author in item_list %}
 		<tr>
-			<td class="center">
-				{{ book.id }}
+			<td>
+				{{ author.id }}
 			</td>
-			<td class="left">
-				<a href='{% url 'library:book_detail' book.id %}'>{{ book.title }}</a>
+			<td>
+				{{ author.last_name }}
 			</td>
-			<td class="left">
-				{{ book.author.full_name }}
-			</td>
-			<td class="center">
-				{{ book.published }}
+			<td>
+				{{ author.first_name }}
 			</td>
 		</tr>
 		{% empty %}
 		<tr>
 			<td colspan="4">
-				No books
+				No authors
 			</td>
 		</tr>
 		{% endfor %}

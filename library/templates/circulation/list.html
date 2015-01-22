@@ -1,0 +1,61 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | Circulation History
+{% endblock %}
+
+{% block page_first_header %}
+	Circulation History
+{% endblock %}
+
+{% block content %}
+{% if is_paginated %}
+{% include 'generic/snippets/pagination.html' %}
+{% endif %}
+<a href="{% url 'library:circulation_create' %}">New Circulation Entry</a>
+<table class="listing_table">
+	<thead>
+		<tr>
+			<th style="width: 20%;">
+				Check-out date
+			</th>
+			<th style="width: 20%;">
+				Check-in date
+			</th>
+			<th>
+				Holding
+			</th>
+			<th>
+				Student
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for circ_entry in item_list %}
+		<tr>
+			<td>
+				<a href="{% url 'library:circulation_detail' circ_entry.id %}">{{ circ_entry.checkout_date|date:"SHORT_DATETIME_FORMAT" }}</a>
+			</td>
+			<td>
+				<a href="{% url 'library:circulation_detail' circ_entry.id %}">{{ circ_entry.checkin_date|date:"SHORT_DATETIME_FORMAT" }}</a>
+			</td>
+			<td>
+				{{ circ_entry.book.title }}
+			</td>
+			<td>
+				{{ circ_entry.student.full_name }} ({{ circ_entry.student.grade }})
+			</td>
+		</tr>
+		{% empty %}
+		<tr>
+			<td colspan="4">
+				No entries
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% if is_paginated %}
+{% include 'generic/snippets/pagination.html' %}
+{% endif %}
+{% endblock %}

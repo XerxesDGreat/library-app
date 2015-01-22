@@ -1,0 +1,22 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | {% if book %}Add Book{% else %}Edit Book{% endif %}
+{% endblock %}
+
+{% block page_first_header %}
+	{% if book == None %}Add Book{% else %}Edit Book "{{ book.title }}"{% endif %}
+{% endblock %}
+
+{% block content %}
+	<form action="{% if book %}{% url 'library:book_update' book.id %}{% else %}{% url 'library:book_create' %}{% endif %}" method="post">
+		{% csrf_token %}
+		{% for field in form %}
+			<div class="field_wrapper">
+				{{ field.errors }}
+				{{ field.label_tag }} {{ field }}
+			</div>
+		{% endfor %}
+		<input type="submit" value="Create" />
+	</form>
+{% endblock %}

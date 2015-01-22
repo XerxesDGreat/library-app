@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | Book Listing
+	{{ block.super }} | Student Listing
 {% endblock %}
 
 {% block page_first_header %}
-	Book Listing
+	Student Listing
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
 {% include 'generic/snippets/pagination.html' %}
 {% endif %}
 <div class="general_actions">
-<a href="{% url 'library:book_create' %}">new book</a>
+<a href="{% url 'library:student_create' %}">new student</a>
 </div>
 <table class="listing_table">
 	<thead>
@@ -22,36 +22,30 @@
 				Id
 			</th>
 			<th>
-				Title
+				Name
 			</th>
-			<th>
-				Author
-			</th>
-			<th style="width: 10%">
-				Published
+			<th style="width: 10%;">
+				Grade
 			</th>
 		</tr>
 	</thead>
 	<tbody>
-		{% for book in item_list %}
+		{% for student in item_list %}
 		<tr>
 			<td class="center">
-				{{ book.id }}
+				{{ student.id }}
 			</td>
 			<td class="left">
-				<a href='{% url 'library:book_detail' book.id %}'>{{ book.title }}</a>
-			</td>
-			<td class="left">
-				{{ book.author.full_name }}
+				<a href='{% url 'library:student_detail' student.id %}'>{{ student.full_name }}</a>
 			</td>
 			<td class="center">
-				{{ book.published }}
+				{{ student.grade }}
 			</td>
 		</tr>
 		{% empty %}
 		<tr>
 			<td colspan="4">
-				No books
+				No students
 			</td>
 		</tr>
 		{% endfor %}

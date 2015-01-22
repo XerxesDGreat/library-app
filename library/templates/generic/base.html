@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+{% load staticfiles %}
+<html>
+	<head>
+		<title>{% block title %}Library App{% endblock %}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
+		<link rel="stylesheet" href="{% static "styles.css" %}" />
+	</head>
+	<body>
+		<div id="container">
+			  <header>Fancy Library App</header>
+			  
+			  <nav>
+				<ul class="menuhaut">
+					<li><a href="{% url 'library:book_index' %}">Books</a></li>
+					<li><a href="{% url 'library:author_index' %}">Authors</a></li>
+					<li><a href="{% url 'library:student_index' %}">Students</a></li>
+					<li><a href="#">Reports</a></li>
+				</ul>
+			  </nav>
+	
+			  <div id="content">
+				<h1>{% block page_first_header %}The title of my page{% endblock %}</h1>
+				{% block content %}
+				<h2>The extensible design</h2>
+				<p>This design is released under the Creative Common Attribution Licence</p>
+				<h2>Respect the standards</h2>
+				<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean tellus libero, suscipit at, tincidunt eget, aliquam vitae, arcu. Nunc quam dolor, facilisis hendrerit, <a href="">ultricies</a> id, <a href="">imperdiet</a> id, libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Suspendisse potenti. Cras sit amet felis eu leo placerat scelerisque. Cras orci pede, eleifend nec, iaculis blandit, ullamcorper congue, odio. Quisque laoreet urna nec urna. Nunc sit amet purus sit amet felis rutrum hendrerit. Aliquam fermentum molestie eros. Cras nec elit varius augue eleifend sagittis.</p>
+				<p>In sodales ultrices enim. Mauris nisl. Fusce vel urna nec magna hendrerit auctor. Nulla euismod. Nulla bibendum. In mattis, sem nec eleifend pellentesque, mi massa ornare tortor, ac fringilla augue augue nec mi. Quisque viverra quam consectetuer leo. Ut leo augue, aliquam non, vestibulum non, dignissim nec, sapien. Proin sodales. Quisque in orci. Sed erat est, lacinia ut, varius sit amet, ullamcorper vitae, dui. Nullam malesuada risus ac <a href="">lacus</a>. Suspendisse hendrerit. Integer placerat interdum nulla. Pellentesque vel tellus eget turpis scelerisque venenatis. Nullam adipiscing risus at massa.</p>
+				<h2>Free design</h2>
+				<p>Nunc bibendum sapien. Ut ligula sapien, dignissim vitae, sollicitudin quis, egestas scelerisque, risus. Vestibulum aliquam pretium ante. Nunc sem mi, gravida in, sagittis quis, ullamcorper accumsan, ligula. Aliquam convallis, nibh at tristique tempor, velit orci sollicitudin tellus, in hendrerit purus nibh eu eros. Nam luctus turpis ac tortor. <a href="">Proin</a> et <a href="">elit</a>. Etiam varius eleifend velit. Morbi convallis semper orci.</p>
+				<h2>Some lists</h2>
+				<h3>An ul list</h3>
+				<ul>
+					<li>First element</li>
+					<li>Second element</li>
+				</ul>
+				<h3>An ol list</h3>
+				<ol>
+					<li>First element</li>
+					<li>Second element</li>
+				</ol>
+				{% endblock %}
+			</div><!--  end div#content -->
+			<footer>Design by <a href="http://nicolas.freezee.org">Nicolas Fafchamps</a></footer>
+		</div><!--  end div#container -->
+	</body>
+</html>

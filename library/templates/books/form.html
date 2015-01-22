@@ -1,0 +1,30 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | {% if form_action == "add" %}Add Book{% else %}Edit Book{% endif %}
+{% endblock %}
+
+{% block page_first_header %}
+	{% if form_action == "add" %}Add Book{% else %}Edit Book "{{ book.title }}"{% endif %}
+{% endblock %}
+
+{% block content %}
+	<form action="{% url 'library:book_detail' book.id %}" method="post">
+		{% for field in form %}
+			<div class="field{% if field.errors %} errors{% endif %}">
+				{% if field.errors %}
+				<div class="field_errors">
+				{{ field.errors }}
+				</div>
+				{% endif %}
+			</div>
+			{{ field.label_tag }}
+			{{ field }}
+		{% endfor %}
+		{% csrf_token %}
+		<div class="buttons">
+			<input type="submit" value="Save" />
+			<a href="{% url 'library:book_index' %}">Cancel</a>
+		</div>
+	</form>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | {% if form_action == "add" %}Add Circulation Entry{% else %}Edit Circulation Entry{% endif %}
+{% endblock %}
+
+{% block page_first_header %}
+	{% if form_action == "add" %}Add Circulation Entry{% else %}Edit Circulation Entry{% endif %}
+{% endblock %}
+
+{% block content %}
+	<form action="{% url 'library:circulation_detail' checkout.id %}" method="post">
+		{% for field in form %}
+			<div class="field{% if field.errors %} errors{% endif %}">
+				{% if field.errors %}
+				<div class="field_errors">
+				{{ field.errors }}
+				</div>
+				{% endif %}
+			</div>
+			{{ field.label_tag }}
+			{{ field }}
+		{% endfor %}
+		{% csrf_token %}
+		<div class="buttons">
+			<input type="submit" value="Save" />
+			<a href="{% url 'library:circulation_index' %}">Cancel</a>
+		</div>
+	</form>
+{% endblock %}
