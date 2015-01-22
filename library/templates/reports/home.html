@@ -1,0 +1,15 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+    {{ block.super }} | Reports Home
+{% endblock %}
+
+{% block page_first_header %}
+    Library Reports
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li><a href="{% url 'library:reports_others_read' %}">What others have read (by student)</a></li>
+    </ul>
+{% endblock %}

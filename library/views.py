@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.views import generic
 
 from library.models import Author, Book, Student, Checkout
@@ -141,6 +142,15 @@ class CirculationIndexView(generic.ListView):
     template_name = 'circulation/list.html'
     context_object_name = 'item_list'
     paginate_by = 25
+    page_title = 'Circulation History'
+    
+    def get_context_data(self, **kwargs):
+        context = generic.ListView.get_context_data(self, **kwargs)
+        context['page_title'] = self._get_page_title()
+        return context
+    
+    def _get_page_title(self):
+        return self.page_title
     
     def get_queryset(self):
         return Checkout.objects.order_by('-checkout_date', '-checkin_date', 'book__title')
@@ -175,3 +185,19 @@ class CirculationCreateView(generic.CreateView):
     
     def get_success_url(self):
         return reverse('library:circulation_list', query_args={'added_id': self.object.id})
+
+class CirculationIndexByStudentView(CirculationIndexView):
+    student = None
+    
+    def get_queryset(self):
+        student = self._get_student()
+        return Checkout.objects.filter(student_id=student.id).order_by('-checkout_date')
+    
+    def _get_page_title(self):
+        student = self._get_student()
+        return '%s for %s' % (self.page_title, student.full_name())
+    
+    def _get_student(self):
+        if self.student is None:
+            self.student = get_object_or_404(Student, pk=self.kwargs.get('pk'))
+        return self.student

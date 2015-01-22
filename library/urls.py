@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 
 from library import views
+from django.views.generic.base import TemplateView
 
 urlpatterns = patterns('',
     # author urls
@@ -17,5 +18,10 @@ urlpatterns = patterns('',
     # circulation urls
     url(r'^circulation/(?P<pk>\d+)/$', views.CirculationDetailView.as_view(), name='circulation_detail'),
     url(r'^circulation/create/$', views.CirculationCreateView.as_view(), name='circulation_create'),
-    url(r'^circulation/$', views.CirculationIndexView.as_view(), name='circulation_index'),
+    url(r'^circulation/student/(?P<pk>\d+)/$', views.CirculationIndexByStudentView.as_view(), name='circulation_student_index'),
+    url(r'^circulation/all/$', views.CirculationIndexView.as_view(), name='circulation_index'),
+    url(r'^circulation/$', TemplateView.as_view(template_name='circulation/home.html'), name='circulation_home'),
+    # report urls
+    url(r'^reports/', TemplateView.as_view(template_name='reports/home.html'), name='reports_others_read'),
+    url(r'^reports/$', TemplateView.as_view(template_name='reports/home.html'), name='reports_home'),
 )
