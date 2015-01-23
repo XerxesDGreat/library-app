@@ -1,0 +1,31 @@
+{% extends 'generic/base.html' %}
+
+{% block title %}
+	{{ block.super }} | Others Read Report &gt; Choose Book
+{% endblock %}
+
+{% block page_first_header %}
+	Others Read Report &gt; Choose Book
+{% endblock %}
+
+{% block content %}
+	Select which book to start
+	<form action="{% url 'library:reports_others_read' %}" method="GET">
+		<div class="field{% if errors %} errors{% endif %}">
+			{% if errors %}
+				<div class="field_errors">
+					{{ errors }}
+				</div>
+			{% endif %}
+			<select name="book_id">
+				<option value="">---------</option>
+				{% for book in books %}
+				<option value="{{ book.id }}">{{ book.title }}</option>
+				{% endfor %}
+			</select>
+		</div><!-- end div.field -->
+		<div class="buttons">
+			<input type="submit" value="Get Report" />
+		</div><!-- end div.buttons -->
+	</form>
+{% endblock %}

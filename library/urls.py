@@ -22,6 +22,6 @@ urlpatterns = patterns('',
     url(r'^circulation/all/$', views.CirculationIndexView.as_view(), name='circulation_index'),
     url(r'^circulation/$', TemplateView.as_view(template_name='circulation/home.html'), name='circulation_home'),
     # report urls
-    url(r'^reports/', TemplateView.as_view(template_name='reports/home.html'), name='reports_others_read'),
+    url(r'^reports/', views.others_read_report, name='reports_others_read'),
     url(r'^reports/$', TemplateView.as_view(template_name='reports/home.html'), name='reports_home'),
 )

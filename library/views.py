@@ -1,9 +1,11 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.views import generic
 
 from library.models import Author, Book, Student, Checkout
 from library_app.utils import reverse
 from library.forms import BookForm, CheckoutForm#, AuthorForm, StudentForm
+from django.utils.datastructures import MultiValueDictKeyError
+from django.core.paginator import Paginator
     
 #########################################################
 ## Authors
@@ -201,3 +203,30 @@ class CirculationIndexByStudentView(CirculationIndexView):
         if self.student is None:
             self.student = get_object_or_404(Student, pk=self.kwargs.get('pk'))
         return self.student
+
+#########################################################
+## Reports
+def others_read_report(request):
+    book_id = None
+    errors = False
+    try:
+        if request.GET['book_id'] != "":
+            book_id = request.GET['book_id']
+        else:
+            errors = "Must select a book"
+    except MultiValueDictKeyError, e:
+        pass
+    if book_id is not None:
+        book_counts = {}
+        for book_checkout in Checkout.objects.filter(book__id=book_id):
+            for student_checkout in Checkout.objects.filter(student__id=book_checkout.student.id):
+                try:
+                    book_counts[student_checkout.book]['count'] += 1
+                except:
+                    book_counts[student_checkout.book] = {'book': student_checkout.book, 'count': 1}
+        sorted_books = [bc[1]['book'] for bc in (sorted(book_counts.items(), key=lambda book_count_entry: book_count_entry[1]['count']))]
+        context = {'item_list': sorted_books, 'is_paginated': False}
+        return render_to_response('books/list.html', context)
+    else:
+        return render_to_response('reports/book_selection.html', {'books': Book.objects.all().order_by('title'), 'errors': errors})
+        
