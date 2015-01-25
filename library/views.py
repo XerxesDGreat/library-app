@@ -6,6 +6,7 @@ from library_app.utils import reverse
 from library.forms import BookForm, CheckoutForm#, AuthorForm, StudentForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core.paginator import Paginator
+from operator import itemgetter
     
 #########################################################
 ## Authors
@@ -60,14 +61,14 @@ class BookIndexView(generic.ListView):
     def get_queryset(self):
         return Book.objects.order_by('title')
 
-class BookDetailView(generic.UpdateView):
+class BookUpdateView(generic.UpdateView):
     form_class = BookForm
     model = Book
     fields = ['title', 'author', 'published']
     template_name = 'books/form.html'
     
     def get_context_data(self, **kwargs):
-        context = super(BookDetailView, self).get_context_data(**kwargs)
+        context = super(BookUpdateView, self).get_context_data(**kwargs)
         context['form_action'] = 'add' if self.object is None else 'edit'
         return context
     
@@ -77,6 +78,27 @@ class BookDetailView(generic.UpdateView):
             query_args = {'edited': self.object.id}
             
         return reverse('library:book_index', query_args=query_args)
+
+class BookDetailView(generic.DetailView):
+    model = Book
+    template_name = 'books/detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(BookDetailView, self).get_context_data(**kwargs)
+        recommended_books = {}
+        be = Checkout.objects.filter(book__id=self.object.id)
+        for book_entry in be:
+            se = Checkout.objects.filter(student__id=book_entry.student.id)
+            for student_entry in se:
+                if student_entry.book.id == self.object.id:
+                    continue
+                try:
+                    recommended_books[student_entry.book]['count'] += 1
+                except:
+                    recommended_books[student_entry.book] = {'book': student_entry.book, 'count': 1}
+        context['recommended_book_list'] = [y[1] for y in sorted(recommended_books.items(), key=lambda x: x[1]['count'], reverse=True)]
+        return context
+    
 
 class BookCreateView(generic.CreateView):
     model = Book
@@ -206,20 +228,27 @@ class CirculationIndexByStudentView(CirculationIndexView):
 
 #########################################################
 ## Reports
-def others_read_report(request):
+def others_read_report(request, **kwargs):
     book_id = None
     errors = False
+    student = None
     try:
+        student = get_object_or_404(Student, pk=kwargs['student_id'])
         if request.GET['book_id'] != "":
             book_id = request.GET['book_id']
         else:
             errors = "Must select a book"
-    except MultiValueDictKeyError, e:
+    except MultiValueDictKeyError:
         pass
     if book_id is not None:
         book_counts = {}
-        for book_checkout in Checkout.objects.filter(book__id=book_id):
+        book_checkouts = Checkout.objects.filter(book__id=book_id)
+        for book_checkout in book_checkouts:
+            if book_checkout.student.id == student.id:
+                continue
             for student_checkout in Checkout.objects.filter(student__id=book_checkout.student.id):
+                if student_checkout.book.id == book_id:
+                    continue
                 try:
                     book_counts[student_checkout.book]['count'] += 1
                 except:
@@ -228,5 +257,15 @@ def others_read_report(request):
         context = {'item_list': sorted_books, 'is_paginated': False}
         return render_to_response('books/list.html', context)
     else:
-        return render_to_response('reports/book_selection.html', {'books': Book.objects.all().order_by('title'), 'errors': errors})
+        checkout_history = Checkout.objects.filter(student=student).order_by('book__title')
+        books = [x.book for x in checkout_history]
+        return render_to_response('reports/book_selection.html', {'student': student, 'books': books, 'errors': errors})
+
+def reports_student_index(request, **kwargs):
+    student = get_object_or_404(Student, pk=kwargs['student_id'])
+    context = {'student': student}
+    return render_to_response('reports/report_selection.html', context)
+
+def reports_home_select_student(request):
+    return render_to_response('reports/home.html', {'students': Student.objects.all().order_by('last_name', 'first_name')})
         

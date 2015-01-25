@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^authors/create/', views.AuthorCreateView.as_view(), name='author_add'),
     url(r'^authors/$', views.AuthorIndexView.as_view(), name='author_index'),
     # book urls
+    url(r'^books/(?P<pk>\d+)/update/$', views.BookUpdateView.as_view(), name='book_update'),
     url(r'^books/(?P<pk>\d+)/$', views.BookDetailView.as_view(), name='book_detail'),
     url(r'^books/create/$', views.BookCreateView.as_view(), name='book_create'),
     url(r'^books/$', views.BookIndexView.as_view(), name='book_index'),
@@ -22,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^circulation/all/$', views.CirculationIndexView.as_view(), name='circulation_index'),
     url(r'^circulation/$', TemplateView.as_view(template_name='circulation/home.html'), name='circulation_home'),
     # report urls
-    url(r'^reports/', views.others_read_report, name='reports_others_read'),
-    url(r'^reports/$', TemplateView.as_view(template_name='reports/home.html'), name='reports_home'),
+    url(r'^reports/(?P<student_id>\d+)/others_read/$', views.others_read_report, name='reports_others_read'),
+    url(r'^reports/(?P<student_id>\d+)/$', views.reports_student_index, name='reports_student_index'),
+    url(r'^reports/$', views.reports_home_select_student, name='reports_home'),
 )

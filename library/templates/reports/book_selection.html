@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block page_first_header %}
-	Others Read Report &gt; Choose Book
+	Recommended Books based on book &gt; Choose Book
 {% endblock %}
 
 {% block content %}
 	Select which book to start
-	<form action="{% url 'library:reports_others_read' %}" method="GET">
+	<form action="{% url 'library:reports_others_read' student.id %}" method="GET">
 		<div class="field{% if errors %} errors{% endif %}">
 			{% if errors %}
 				<div class="field_errors">

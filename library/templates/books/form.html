@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-	<form action="{% url 'library:book_detail' book.id %}" method="post">
+	<form action="{% url 'library:book_update' book.id %}" method="post">
 		{% for field in form %}
 			<div class="field{% if field.errors %} errors{% endif %}">
 				{% if field.errors %}
