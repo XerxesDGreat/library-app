@@ -1,0 +1,15 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+    {{ block.super }} | Circulation Home
+{% endblock %}
+
+{% block page_first_header %}
+    Circulation Home
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li><a href="{% url 'library:circulation_index' %}">View all circulation history</a></li>
+    </ul>
+{% endblock %}

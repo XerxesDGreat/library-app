@@ -1,19 +1,38 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | Edit Book
+	{{ block.super }} | Book Details
 {% endblock %}
 
 {% block page_first_header %}
-	Edit Book "{{ book.title }}"
+	Details about "{{ book.title }}"
 {% endblock %}
 
 {% block content %}
-	{% if error_message %}
-	<div class="errors">
-		{{ error_message }}
+	<div>
+		<em>Title:</em> {{ book.title }}
 	</div>
-	<form action="{% url 'library:book_detail' book.id %}" method="post">
-		{{ formset }}
-	</form>
+	<div>
+		<em>Author:</em> {{ book.author.full_name }}
+	</div>
+	<div>
+		<em>Publication date:</em> {{ book.published }}
+	</div>
+	<div>
+		<em>Book ID:</em> {{ book.id }}
+	</div>
+	<div>
+		Others also read:<br />
+		{% if recommended_book_list %}
+		<ul>
+			{% for book in recommended_book_list %}
+			<li>
+				<a href="{% url 'library:book_detail' book.book.id %}">{{ book.book.title }}</a> ({{ book.count }})
+			</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+		...nothing, sorry
+		{% endif %}
+	</div>
 {% endblock %}

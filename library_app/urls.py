@@ -4,6 +4,6 @@ from django.contrib import admin
 from library import views
 
 urlpatterns = patterns('',
-    url(r'^library/', include('library.urls', namespace='library')),
+    url(r'', include('library.urls', namespace='library')),
     url(r'^admin/', include(admin.site.urls))
 )

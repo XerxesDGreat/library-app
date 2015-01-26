@@ -1,0 +1,23 @@
+{% extends 'generic/base.html' %}
+
+{% block title %}
+	{{ block.super }} | Reports
+{% endblock %}
+
+{% block page_first_header %}
+	Reports for {{ student.full_name }}
+{% endblock %}
+
+{% block content %}
+<p>
+	Please select a report from the following list. You'll be prompted for more info as needed
+</p>
+<ul>
+	<li>
+		<a href="{% url 'library:reports_others_read' student.id %}">Books others have read (based on specific book)</a>
+	</li>
+	<li>
+		<a href="#">Recommended books (based on entire history)</a>
+	</li>
+</ul>
+{% endblock %}
