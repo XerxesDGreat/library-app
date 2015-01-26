@@ -27,6 +27,9 @@
 			<th style="width: 10%;">
 				Grade
 			</th>
+			<th>
+                Actions
+			</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -40,6 +43,9 @@
 			</td>
 			<td class="center">
 				{{ student.grade }}
+			</td>
+			<td class="center">
+                <a href="{% url 'library:circulation_student_index' student.id %}">Circ history</a>
 			</td>
 		</tr>
 		{% empty %}
