@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^books/$', views.BookIndexView.as_view(), name='book_index'),
     # student urls
     url(r'^students/(?P<pk>\d+)/$', views.StudentDetailView.as_view(), name='student_detail'),
+    url(r'^students/(?P<pk>\d+)/update/$', views.StudentUpdateView.as_view(), name='student_update'),
     url(r'^students/create/$', views.StudentCreateView.as_view(), name='student_create'),
     url(r'^students/$', views.StudentIndexView.as_view(), name='student_index'),
     # circulation urls

@@ -5,8 +5,6 @@ from library.models import Author, Book, Student, Checkout
 from library_app.utils import reverse
 from library.forms import BookForm, CheckoutForm#, AuthorForm, StudentForm
 from django.utils.datastructures import MultiValueDictKeyError
-from django.core.paginator import Paginator
-from operator import itemgetter
     
 #########################################################
 ## Authors
@@ -130,7 +128,27 @@ class StudentIndexView(generic.ListView):
     def get_queryset(self):
         return Student.objects.order_by('last_name', 'first_name')
 
-class StudentDetailView(generic.UpdateView):
+class StudentDetailView(generic.DetailView):
+    model = Student
+    template_name = 'students/detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(StudentDetailView, self).get_context_data(**kwargs)
+        context['circ_history'] = Checkout.objects.filter(student__id=self.object.id)
+        book_co_count = {}
+        for book_entry in context['circ_history']:
+            for student_entry in Checkout.objects.filter(book__id=book_entry.book.id):
+                if student_entry.student.id == self.object.id:
+                    continue
+                try:
+                    book_co_count[student_entry.book]['count'] += 1
+                except:
+                    book_co_count[student_entry.book] = {'book': student_entry.book, 'count': 1}
+        sorted_books = [bc[1] for bc in (sorted(book_co_count.items(), key=lambda book_count_entry: book_count_entry[1]['count']))]
+        context['book_recommendations'] = sorted_books
+        return context
+
+class StudentUpdateView(generic.UpdateView):
     #form_class = StudentForm
     model = Student
     fields = ['first_name', 'last_name', 'grade']
