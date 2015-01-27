@@ -1,22 +1,22 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | {% if student == None %}Add Student{% else %}Edit Student{% endif %}
+	{{ block.super }} | {% if patron == None %}Add Patron{% else %}Edit Patron{% endif %}
 {% endblock %}
 
 {% block page_first_header %}
-	{% if student == None %}Add Student{% else %}Edit Student "{{ student.full_name }}"{% endif %}
+	{% if patron == None %}Add Patron{% else %}Edit Patron "{{ patron.full_name }}"{% endif %}
 {% endblock %}
 
 {% block content %}
-	<form action="{% if student == None %}{% url 'library:student_create' %}{% else %}{% url 'library:student_detail' student.id %}{% endif %}" method="post">
+	<form action="{% if patron == None %}{% url 'library:patron_create' %}{% else %}{% url 'library:patron_detail' patron.id %}{% endif %}" method="post">
 		{% for field in form %}
 			{% include 'generic/snippets/form_field.html' with field=field %}
 		{% endfor %}
 		{% csrf_token %}
 		<div class="buttons">
 			<input type="submit" value="Save" />
-			<a href="{% url 'library:student_index' %}">Cancel</a>
+			<a href="{% url 'library:patron_index' %}">Cancel</a>
 		</div>
 	</form>
 {% endblock %}

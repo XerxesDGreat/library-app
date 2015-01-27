@@ -4,7 +4,7 @@ Created on Jan 12, 2015
 @author: josh
 '''
 from django.forms.models import ModelForm
-from library.models import Book, Author, Student, Checkout
+from library.models import Book, Author, Patron, Checkout
 from django import forms
 
 class BookForm(ModelForm):
@@ -18,15 +18,15 @@ class AuthorForm(ModelForm):
         model = Author
         fields = ['first_name', 'last_name']
         
-class StudentForm(ModelForm):
+class PatronForm(ModelForm):
     class Meta:
-        model = Student
+        model = Patron
         fields = ['first_name', 'last_name']
         
 class CheckoutForm(ModelForm):
     book = forms.ModelChoiceField(queryset=Book.objects.all().order_by('title', 'published'))
-    student = forms.ModelChoiceField(queryset=Student.objects.all().order_by('last_name', 'first_name', 'grade'))
+    patron = forms.ModelChoiceField(queryset=Patron.objects.all().order_by('last_name', 'first_name', 'grade'))
     
     class Meta:
         model = Checkout
-        fields = ['book', 'student', 'checkout_date', 'checkin_date']
+        fields = ['book', 'patron', 'checkout_date', 'checkin_date']

@@ -26,7 +26,7 @@
 				Holding
 			</th>
 			<th>
-				Student
+				Patron
 			</th>
 		</tr>
 	</thead>
@@ -43,7 +43,7 @@
 				{{ circ_entry.book.title }}
 			</td>
 			<td>
-				{{ circ_entry.student.full_name }} ({{ circ_entry.student.grade }})
+				{{ circ_entry.patron.full_name }} ({{ circ_entry.patron.grade }})
 			</td>
 		</tr>
 		{% empty %}

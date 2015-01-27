@@ -1,15 +1,15 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | {% if form_action == "add" %}Add Student{% else %}Edit Student{% endif %}
+	{{ block.super }} | {% if form_action == "add" %}Add Patron{% else %}Edit Patron{% endif %}
 {% endblock %}
 
 {% block page_first_header %}
-	{% if form_action == "add" %}Add Student{% else %}Edit Student "{{ student.full_name }}"{% endif %}
+	{% if form_action == "add" %}Add Patron{% else %}Edit Patron "{{ patron.full_name }}"{% endif %}
 {% endblock %}
 
 {% block content %}
-	<form action="{% url 'library:student_detail' student.id %}" method="post">
+	<form action="{% url 'library:patron_detail' patron.id %}" method="post">
 		{% for field in form %}
 			<div class="field{% if field.errors %} errors{% endif %}">
 				{% if field.errors %}
@@ -24,7 +24,7 @@
 		{% csrf_token %}
 		<div class="buttons">
 			<input type="submit" value="Save" />
-			<a href="{% url 'library:student_index' %}">Cancel</a>
+			<a href="{% url 'library:patron_index' %}">Cancel</a>
 		</div>
 	</form>
 {% endblock %}

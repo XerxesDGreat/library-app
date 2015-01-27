@@ -12,19 +12,19 @@ urlpatterns = patterns('',
     url(r'^books/(?P<pk>\d+)/$', views.BookDetailView.as_view(), name='book_detail'),
     url(r'^books/create/$', views.BookCreateView.as_view(), name='book_create'),
     url(r'^books/$', views.BookIndexView.as_view(), name='book_index'),
-    # student urls
-    url(r'^students/(?P<pk>\d+)/$', views.StudentDetailView.as_view(), name='student_detail'),
-    url(r'^students/(?P<pk>\d+)/update/$', views.StudentUpdateView.as_view(), name='student_update'),
-    url(r'^students/create/$', views.StudentCreateView.as_view(), name='student_create'),
-    url(r'^students/$', views.StudentIndexView.as_view(), name='student_index'),
+    # patron urls
+    url(r'^patrons/(?P<pk>\d+)/$', views.PatronDetailView.as_view(), name='patron_detail'),
+    url(r'^patrons/(?P<pk>\d+)/update/$', views.PatronUpdateView.as_view(), name='patron_update'),
+    url(r'^patrons/create/$', views.PatronCreateView.as_view(), name='patron_create'),
+    url(r'^patrons/$', views.PatronIndexView.as_view(), name='patron_index'),
     # circulation urls
     url(r'^circulation/(?P<pk>\d+)/$', views.CirculationDetailView.as_view(), name='circulation_detail'),
     url(r'^circulation/create/$', views.CirculationCreateView.as_view(), name='circulation_create'),
-    url(r'^circulation/student/(?P<pk>\d+)/$', views.CirculationIndexByStudentView.as_view(), name='circulation_student_index'),
+    url(r'^circulation/patron/(?P<pk>\d+)/$', views.CirculationIndexByPatronView.as_view(), name='circulation_patron_index'),
     url(r'^circulation/all/$', views.CirculationIndexView.as_view(), name='circulation_index'),
     url(r'^circulation/$', TemplateView.as_view(template_name='circulation/home.html'), name='circulation_home'),
     # report urls
-    url(r'^reports/(?P<student_id>\d+)/others_read/$', views.others_read_report, name='reports_others_read'),
-    url(r'^reports/(?P<student_id>\d+)/$', views.reports_student_index, name='reports_student_index'),
-    url(r'^reports/$', views.reports_home_select_student, name='reports_home'),
+    url(r'^reports/(?P<patron_id>\d+)/others_read/$', views.others_read_report, name='reports_others_read'),
+    url(r'^reports/(?P<patron_id>\d+)/$', views.reports_patron_index, name='reports_patron_index'),
+    url(r'^reports/$', views.reports_home_select_patron, name='reports_home'),
 )

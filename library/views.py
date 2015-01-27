@@ -1,9 +1,9 @@
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views import generic
 
-from library.models import Author, Book, Student, Checkout
+from library.models import Author, Book, Patron, Checkout
 from library_app.utils import reverse
-from library.forms import BookForm, CheckoutForm#, AuthorForm, StudentForm
+from library.forms import BookForm, CheckoutForm#, AuthorForm, PatronForm
 from django.utils.datastructures import MultiValueDictKeyError
     
 #########################################################
@@ -86,14 +86,14 @@ class BookDetailView(generic.DetailView):
         recommended_books = {}
         be = Checkout.objects.filter(book__id=self.object.id)
         for book_entry in be:
-            se = Checkout.objects.filter(student__id=book_entry.student.id)
-            for student_entry in se:
-                if student_entry.book.id == self.object.id:
+            se = Checkout.objects.filter(patron__id=book_entry.patron.id)
+            for patron_entry in se:
+                if patron_entry.book.id == self.object.id:
                     continue
                 try:
-                    recommended_books[student_entry.book]['count'] += 1
+                    recommended_books[patron_entry.book]['count'] += 1
                 except:
-                    recommended_books[student_entry.book] = {'book': student_entry.book, 'count': 1}
+                    recommended_books[patron_entry.book] = {'book': patron_entry.book, 'count': 1}
         context['recommended_book_list'] = [y[1] for y in sorted(recommended_books.items(), key=lambda x: x[1]['count'], reverse=True)]
         return context
     
@@ -111,9 +111,9 @@ class BookCreateView(generic.CreateView):
         return reverse('library:book_list', query_args={'added_id': self.object.id})
     
 #########################################################
-## Students
-class StudentIndexView(generic.ListView):
-    template_name = 'students/list.html'
+## Patrons
+class PatronIndexView(generic.ListView):
+    template_name = 'patrons/list.html'
     context_object_name = 'item_list'
     paginate_by = 25
     
@@ -126,36 +126,36 @@ class StudentIndexView(generic.ListView):
         return context
     
     def get_queryset(self):
-        return Student.objects.order_by('last_name', 'first_name')
+        return Patron.objects.order_by('type', 'department', 'last_name', 'first_name')
 
-class StudentDetailView(generic.DetailView):
-    model = Student
-    template_name = 'students/detail.html'
+class PatronDetailView(generic.DetailView):
+    model = Patron
+    template_name = 'patrons/detail.html'
     
     def get_context_data(self, **kwargs):
-        context = super(StudentDetailView, self).get_context_data(**kwargs)
-        context['circ_history'] = Checkout.objects.filter(student__id=self.object.id)
+        context = super(PatronDetailView, self).get_context_data(**kwargs)
+        context['circ_history'] = Checkout.objects.filter(patron__id=self.object.id)
         book_co_count = {}
         for book_entry in context['circ_history']:
-            for student_entry in Checkout.objects.filter(book__id=book_entry.book.id):
-                if student_entry.student.id == self.object.id:
+            for patron_entry in Checkout.objects.filter(book__id=book_entry.book.id):
+                if patron_entry.patron.id == self.object.id:
                     continue
                 try:
-                    book_co_count[student_entry.book]['count'] += 1
+                    book_co_count[patron_entry.book]['count'] += 1
                 except:
-                    book_co_count[student_entry.book] = {'book': student_entry.book, 'count': 1}
+                    book_co_count[patron_entry.book] = {'book': patron_entry.book, 'count': 1}
         sorted_books = [bc[1] for bc in (sorted(book_co_count.items(), key=lambda book_count_entry: book_count_entry[1]['count']))]
         context['book_recommendations'] = sorted_books
         return context
 
-class StudentUpdateView(generic.UpdateView):
-    #form_class = StudentForm
-    model = Student
+class PatronUpdateView(generic.UpdateView):
+    #form_class = PatronForm
+    model = Patron
     fields = ['first_name', 'last_name', 'grade']
-    template_name = 'students/form.html'
+    template_name = 'patrons/form.html'
     
     def get_context_data(self, **kwargs):
-        context = super(StudentDetailView, self).get_context_data(**kwargs)
+        context = super(PatronDetailView, self).get_context_data(**kwargs)
         context['form_action'] = 'add' if self.object is None else 'edit'
         return context
     
@@ -164,19 +164,19 @@ class StudentUpdateView(generic.UpdateView):
         if self.object:
             query_args = {'edited': self.object.id}
             
-        return reverse('library:student_index', query_args=query_args)
+        return reverse('library:patron_index', query_args=query_args)
 
-class StudentCreateView(generic.CreateView):
-    model = Student
+class PatronCreateView(generic.CreateView):
+    model = Patron
     fields = ['first_name', 'last_name', 'grade']
     
     def get_context_data(self, **kwargs):
         context_data = generic.CreateView.get_context_data(self, **kwargs)
-        context_data['student'] = self.object
+        context_data['patron'] = self.object
         return context_data
     
     def get_success_url(self):
-        return reverse('library:student_index', query_args={'added_id': self.object.id})
+        return reverse('library:patron_index', query_args={'added_id': self.object.id})
     
 #########################################################
 ## Circulation
@@ -200,7 +200,7 @@ class CirculationIndexView(generic.ListView):
 class CirculationDetailView(generic.UpdateView):
     form_class = CheckoutForm
     model = Checkout
-    fields = ['checkout_date', 'checkin_date', 'student', 'book']
+    fields = ['checkout_date', 'checkin_date', 'patron', 'book']
     template_name = 'circulation/form.html'
     
     def get_context_data(self, **kwargs):
@@ -218,7 +218,7 @@ class CirculationDetailView(generic.UpdateView):
 class CirculationCreateView(generic.CreateView):
     model = Checkout
     form_class = CheckoutForm
-    #fields = ['checkout_date', 'checkin_date', 'book', 'student']
+    #fields = ['checkout_date', 'checkin_date', 'book', 'patron']
     
     def get_context_data(self, **kwargs):
         context_data = generic.CreateView.get_context_data(self, **kwargs)
@@ -228,30 +228,30 @@ class CirculationCreateView(generic.CreateView):
     def get_success_url(self):
         return reverse('library:circulation_list', query_args={'added_id': self.object.id})
 
-class CirculationIndexByStudentView(CirculationIndexView):
-    student = None
+class CirculationIndexByPatronView(CirculationIndexView):
+    patron = None
     
     def get_queryset(self):
-        student = self._get_student()
-        return Checkout.objects.filter(student_id=student.id).order_by('-checkout_date')
+        patron = self._get_patron()
+        return Checkout.objects.filter(patron_id=patron.id).order_by('-checkout_date')
     
     def _get_page_title(self):
-        student = self._get_student()
-        return '%s for %s' % (self.page_title, student.full_name())
+        patron = self._get_patron()
+        return '%s for %s' % (self.page_title, patron.full_name())
     
-    def _get_student(self):
-        if self.student is None:
-            self.student = get_object_or_404(Student, pk=self.kwargs.get('pk'))
-        return self.student
+    def _get_patron(self):
+        if self.patron is None:
+            self.patron = get_object_or_404(Patron, pk=self.kwargs.get('pk'))
+        return self.patron
 
 #########################################################
 ## Reports
 def others_read_report(request, **kwargs):
     book_id = None
     errors = False
-    student = None
+    patron = None
     try:
-        student = get_object_or_404(Student, pk=kwargs['student_id'])
+        patron = get_object_or_404(Patron, pk=kwargs['patron_id'])
         if request.GET['book_id'] != "":
             book_id = request.GET['book_id']
         else:
@@ -262,28 +262,28 @@ def others_read_report(request, **kwargs):
         book_counts = {}
         book_checkouts = Checkout.objects.filter(book__id=book_id)
         for book_checkout in book_checkouts:
-            if book_checkout.student.id == student.id:
+            if book_checkout.patron.id == patron.id:
                 continue
-            for student_checkout in Checkout.objects.filter(student__id=book_checkout.student.id):
-                if student_checkout.book.id == book_id:
+            for patron_checkout in Checkout.objects.filter(patron__id=book_checkout.patron.id):
+                if patron_checkout.book.id == book_id:
                     continue
                 try:
-                    book_counts[student_checkout.book]['count'] += 1
+                    book_counts[patron_checkout.book]['count'] += 1
                 except:
-                    book_counts[student_checkout.book] = {'book': student_checkout.book, 'count': 1}
+                    book_counts[patron_checkout.book] = {'book': patron_checkout.book, 'count': 1}
         sorted_books = [bc[1]['book'] for bc in (sorted(book_counts.items(), key=lambda book_count_entry: book_count_entry[1]['count']))]
         context = {'item_list': sorted_books, 'is_paginated': False}
         return render_to_response('books/list.html', context)
     else:
-        checkout_history = Checkout.objects.filter(student=student).order_by('book__title')
+        checkout_history = Checkout.objects.filter(patron=patron).order_by('book__title')
         books = [x.book for x in checkout_history]
-        return render_to_response('reports/book_selection.html', {'student': student, 'books': books, 'errors': errors})
+        return render_to_response('reports/book_selection.html', {'patron': patron, 'books': books, 'errors': errors})
 
-def reports_student_index(request, **kwargs):
-    student = get_object_or_404(Student, pk=kwargs['student_id'])
-    context = {'student': student}
+def reports_patron_index(request, **kwargs):
+    patron = get_object_or_404(Patron, pk=kwargs['patron_id'])
+    context = {'patron': patron}
     return render_to_response('reports/report_selection.html', context)
 
-def reports_home_select_student(request):
-    return render_to_response('reports/home.html', {'students': Student.objects.all().order_by('last_name', 'first_name')})
+def reports_home_select_patron(request):
+    return render_to_response('reports/home.html', {'patrons': Patron.objects.all().order_by('last_name', 'first_name')})
         
