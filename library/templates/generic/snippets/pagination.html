@@ -1,9 +1,26 @@
+{% load library_extras %}
 <div class="pagination">
     {% if page_obj.has_previous %}
     <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% else %}
+    previous
     {% endif %}
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    &nbsp;&nbsp;
+    Jump to page
+    <form method="GET" style="display:inline;">
+        <select name="page">
+            {% for i in page_obj.paginator.num_pages|iter_range %}
+                {% with iter=i|add:"1" %}
+                <option value="{{ iter }}"{% if page_obj.number == iter %}selected="selected"{% endif %}>{{ iter }}</option>
+                {% endwith %}
+            {% endfor %}
+        </select>
+        <input type="submit" value="Go!" />
+    </form>
+    &nbsp;&nbsp;
     {% if page_obj.has_next %}
     <a href="?page={{ page_obj.next_page_number }}">next</a>
+    {% else %}
+    next
     {% endif %}
 </div>

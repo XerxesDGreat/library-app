@@ -10,7 +10,7 @@
 
 {% block content %}
 	Select which book to start
-	<form action="{% url 'library:reports_others_read' student.id %}" method="GET">
+	<form action="{% url 'library:reports_others_read' patron.id %}" method="GET">
 		<div class="field{% if errors %} errors{% endif %}">
 			{% if errors %}
 				<div class="field_errors">

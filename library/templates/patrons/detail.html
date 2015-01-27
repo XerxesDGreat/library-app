@@ -1,25 +1,25 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | Edit Student
+	{{ block.super }} | Edit Patron
 {% endblock %}
 
 {% block page_first_header %}
-	Edit Student "{{ student.full_name }}"
+	Edit Patron "{{ patron.full_name }}"
 {% endblock %}
 
 {% block content %}
     <div>
-        <em>First name:</em> {{ student.first_name }}
+        <em>First name:</em> {{ patron.first_name }}
     </div>
     <div>
-        <em>Last name:</em> {{ student.last_name }}
+        <em>Last name:</em> {{ patron.last_name }}
     </div>
     <div>
-        <em>Grade:</em> {{ student.grade }}
+        <em>Grade:</em> {{ patron.grade }}
     </div>
     <div>
-        <em>Student ID:</em> {{ student.id }}
+        <em>patron ID:</em> {{ patron.id }}
     </div>
     <div>
         Circulation History:<br />

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block page_first_header %}
-	Reports for {{ student.full_name }}
+	Reports for {{ patron.full_name }}
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
 </p>
 <ul>
 	<li>
-		<a href="{% url 'library:reports_others_read' student.id %}">Books others have read (based on specific book)</a>
+		<a href="{% url 'library:reports_others_read' patron.id %}">Books others have read (based on specific book)</a>
 	</li>
 	<li>
 		<a href="#">Recommended books (based on entire history)</a>

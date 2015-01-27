@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | Student Listing
+	{{ block.super }} | Patron Listing
 {% endblock %}
 
 {% block page_first_header %}
-	Student Listing
+	Patron Listing
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
 {% include 'generic/snippets/pagination.html' %}
 {% endif %}
 <div class="general_actions">
-<a href="{% url 'library:student_create' %}">new student</a>
+<a href="{% url 'library:patron_create' %}">new patron</a>
 </div>
 <table class="listing_table">
 	<thead>
@@ -33,25 +33,25 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for student in item_list %}
+		{% for patron in item_list %}
 		<tr>
 			<td class="center">
-				{{ student.id }}
+				{{ patron.id }}
 			</td>
 			<td class="left">
-				<a href='{% url 'library:student_detail' student.id %}'>{{ student.full_name }}</a>
+				<a href='{% url 'library:patron_detail' patron.id %}'>{{ patron.full_name }}</a>
 			</td>
 			<td class="center">
-				{{ student.grade }}
+			    {% if patron.is_student %}{{ patron.department }} ({{ patron.grade }}){% else %}{{ patron.patron_type }}{% endif %}
 			</td>
 			<td class="center">
-                <a href="{% url 'library:circulation_student_index' student.id %}">Circ history</a>
+                <a href="{% url 'library:circulation_patron_index' patron.id %}">Circ history</a>
 			</td>
 		</tr>
 		{% empty %}
 		<tr>
 			<td colspan="4">
-				No students
+				No patrons
 			</td>
 		</tr>
 		{% endfor %}
