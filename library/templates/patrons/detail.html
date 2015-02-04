@@ -5,10 +5,11 @@
 {% endblock %}
 
 {% block page_first_header %}
-	Edit Patron "{{ patron.full_name }}"
+	{{ patron.full_name }}
 {% endblock %}
 
 {% block content %}
+	<a href="{% url 'library:patron_update' patron.id %}">edit</a>
     <div>
         <em>First name:</em> {{ patron.first_name }}
     </div>

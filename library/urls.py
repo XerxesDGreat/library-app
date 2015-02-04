@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^books/(?P<pk>\d+)/update/$', views.BookUpdateView.as_view(), name='book_update'),
     url(r'^books/(?P<pk>\d+)/$', views.BookDetailView.as_view(), name='book_detail'),
     url(r'^books/create/$', views.BookCreateView.as_view(), name='book_create'),
+    url(r'^books/search/title/$', views.book_title_search, name='book_search'),
     url(r'^books/$', views.BookIndexView.as_view(), name='book_index'),
     # patron urls
     url(r'^patrons/(?P<pk>\d+)/$', views.PatronDetailView.as_view(), name='patron_detail'),

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block page_first_header %}
-	Book Listing
+	{% if search_term %}Search results for "{{ search_term }}"{% else %}Book Listing {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,11 +15,22 @@
 <div class="general_actions">
 <a href="{% url 'library:book_create' %}">new book</a>
 </div>
+<div class="search">
+	<form action="{% url 'library:book_index' %}" method="GET">
+		<input type="text" name="q" />
+		<input type="submit" value="Search!" />
+		{% for qp_name, qp_value in carryover_query_params.items %}
+		{% if qp_name != 'q' %}
+		<input type="hidden" name="{{ qp_name }}" value="{{ qp_value }}" />
+		{% endif %}
+		{% endfor %}
+	</form>
+</div>
 <table class="listing_table">
 	<thead>
 		<tr>
-			<th style="width: 10%;">
-				Id
+			<th style="width: 8%">
+				Control
 			</th>
 			<th>
 				Title
@@ -28,7 +39,13 @@
 				Author
 			</th>
 			<th style="width: 10%">
-				Published
+				Publish date
+			</th>
+			<th>
+				Addl info
+			</th>
+			<th style="width: 10%">
+				Actions
 			</th>
 		</tr>
 	</thead>
@@ -36,16 +53,24 @@
 		{% for book in item_list %}
 		<tr>
 			<td class="center">
-				{{ book.id }}
+				{{ book.control_number }}
 			</td>
 			<td class="left">
-				<a href='{% url 'library:book_detail' book.id %}'>{{ book.title }}</a>
+				<a href='{% url 'library:book_detail' book.id %}'>{{ book.title }} {{ book.subtitle|truncatechars:20 }}</a>
 			</td>
 			<td class="left">
-				{{ book.author.full_name }}
+				{% if book.author %}{{ book.author.full_name }}{% else %}---{% endif %}
 			</td>
 			<td class="center">
-				{{ book.published }}
+				{{ book.publish_date }}
+			</td>
+			<td class="left">
+				{{ book.series_statement|default:" " }} {{ book.volume_sequential_designation|default:"" }}
+			</td>
+			<td>
+				{% if return_url %}
+				<a href="{{ return_url }}?book_id={{ book.id }}">Select</a>
+				{% endif %}
 			</td>
 		</tr>
 		{% empty %}

@@ -63,3 +63,7 @@ target/
 .project
 .pydevproject
 .settings
+
+# vim
+*.swp
+*.swo

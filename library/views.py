@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views import generic
+import json
 
 from library.models import Author, Book, Patron, Checkout
 from library_app.utils import reverse
 from library.forms import BookForm, CheckoutForm#, AuthorForm, PatronForm
 from django.utils.datastructures import MultiValueDictKeyError
+from django.http.response import HttpResponse
     
 #########################################################
 ## Authors
@@ -50,14 +52,18 @@ class BookIndexView(generic.ListView):
     
     def get_context_data(self, **kwargs):
         context = generic.ListView.get_context_data(self, **kwargs)
-        try:
-            context['added_id'] = self.request.GET['added_id']
-        except:
-            pass
+        context['added_id'] = self.request.GET.get('added_id')
+        context['search_term'] = self.request.GET.get('q')
+        context['carryover_query_params'] = self.request.GET.dict()
+        context['return_url'] = self.request.GET.get('return_url')
         return context
     
     def get_queryset(self):
-        return Book.objects.order_by('title')
+        search_term = self.request.GET.get('q')
+        queryset = Book.objects.all().order_by('title')
+        if search_term is not None:
+            queryset = queryset.filter(title__icontains=search_term)
+        return queryset
 
 class BookUpdateView(generic.UpdateView):
     form_class = BookForm
@@ -96,7 +102,6 @@ class BookDetailView(generic.DetailView):
                     recommended_books[patron_entry.book] = {'book': patron_entry.book, 'count': 1}
         context['recommended_book_list'] = [y[1] for y in sorted(recommended_books.items(), key=lambda x: x[1]['count'], reverse=True)]
         return context
-    
 
 class BookCreateView(generic.CreateView):
     model = Book
@@ -109,6 +114,13 @@ class BookCreateView(generic.CreateView):
     
     def get_success_url(self):
         return reverse('library:book_list', query_args={'added_id': self.object.id})
+    
+def book_title_search(request):
+    query_val = request.GET.get('q')
+    matches = []
+    if query_val is not None:
+        matches = [b.title for b in Book.objects.filter(title__icontains=query_val).order_by('title')]
+    return HttpResponse(json.dumps(matches), content_type='application/json')
     
 #########################################################
 ## Patrons
@@ -155,8 +167,8 @@ class PatronUpdateView(generic.UpdateView):
     template_name = 'patrons/form.html'
     
     def get_context_data(self, **kwargs):
-        context = super(PatronDetailView, self).get_context_data(**kwargs)
-        context['form_action'] = 'add' if self.object is None else 'edit'
+        context = super(PatronUpdateView, self).get_context_data(**kwargs)
+        #context['form_action'] = 'add' if self.object is None else 'edit'
         return context
     
     def get_success_url(self):
@@ -169,6 +181,7 @@ class PatronUpdateView(generic.UpdateView):
 class PatronCreateView(generic.CreateView):
     model = Patron
     fields = ['first_name', 'last_name', 'grade']
+    template_name = 'patrons/form.html'
     
     def get_context_data(self, **kwargs):
         context_data = generic.CreateView.get_context_data(self, **kwargs)
@@ -206,6 +219,7 @@ class CirculationDetailView(generic.UpdateView):
     def get_context_data(self, **kwargs):
         context = super(CirculationDetailView, self).get_context_data(**kwargs)
         context['form_action'] = 'add' if self.object is None else 'edit'
+        context['selected_book'] = context['checkout'].book
         return context
     
     def get_success_url(self):
@@ -219,14 +233,19 @@ class CirculationCreateView(generic.CreateView):
     model = Checkout
     form_class = CheckoutForm
     #fields = ['checkout_date', 'checkin_date', 'book', 'patron']
+    template_name = 'circulation/form.html'
     
     def get_context_data(self, **kwargs):
         context_data = generic.CreateView.get_context_data(self, **kwargs)
         context_data['checkout'] = self.object
+        try:
+            context_data['selected_book'] = Book.objects.get(pk=self.request.GET.get('book_id'))
+        except:
+            context_data['selected_book'] = None
         return context_data
     
     def get_success_url(self):
-        return reverse('library:circulation_list', query_args={'added_id': self.object.id})
+        return reverse('library:circulation_index', query_args={'added_id': self.object.id})
 
 class CirculationIndexByPatronView(CirculationIndexView):
     patron = None

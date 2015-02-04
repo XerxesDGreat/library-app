@@ -1,25 +1,40 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-	{{ block.super }} | {% if form_action == "add" %}Add Circulation Entry{% else %}Edit Circulation Entry{% endif %}
+	{{ block.super }} | {% if checkout %}Edit Circulation Entry{% else %}Add Circulation Entry{% endif %}
 {% endblock %}
 
 {% block page_first_header %}
-	{% if form_action == "add" %}Add Circulation Entry{% else %}Edit Circulation Entry{% endif %}
+	{% if checkout %}Edit Circulation Entry{% else %}Add Circulation Entry{% endif %}
 {% endblock %}
 
 {% block content %}
-	<form action="{% url 'library:circulation_detail' checkout.id %}" method="post">
+	<form action="{% if checkout %}{% url 'library:circulation_detail' checkout.id %}{% else %}{% url 'library:circulation_create' %}{% endif %}" method="post">
+	   <div class="field{% if form.book.errors %} errors{% endif %}">
+	       {% if form.book.errors %}
+	       <div class="field_errors">
+	           {{ form.book.errors }}
+	       </div>
+	       {% endif %}
+	       <label>Book:</label>
+	       {% if selected_book %}
+	       {{ selected_book.title }}
+	       <input type="hidden" name="book" value="{{ selected_book.id }}" />
+	       {% endif %}
+	       <a href="{% url 'library:book_index' %}?return_url={% url 'library:circulation_create' %}">{% if selected_book %}(change){% else %}choose book{% endif %}</a>
+	    </div>
 		{% for field in form %}
+            {% if field.html_name != "book" %}
 			<div class="field{% if field.errors %} errors{% endif %}">
 				{% if field.errors %}
 				<div class="field_errors">
 				{{ field.errors }}
 				</div>
 				{% endif %}
-			</div>
 			{{ field.label_tag }}
 			{{ field }}
+            </div>
+			{% endif %}
 		{% endfor %}
 		{% csrf_token %}
 		<div class="buttons">

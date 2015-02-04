@@ -11,7 +11,7 @@ class BookForm(ModelForm):
     author = forms.ModelChoiceField(queryset=Author.objects.all().order_by('last_name', 'first_name'))
     class Meta:
         model = Book
-        fields = ['title', 'author', 'published']
+        fields = ['title', 'author']
         
 class AuthorForm(ModelForm):
     class Meta:
@@ -24,8 +24,8 @@ class PatronForm(ModelForm):
         fields = ['first_name', 'last_name']
         
 class CheckoutForm(ModelForm):
-    book = forms.ModelChoiceField(queryset=Book.objects.all().order_by('title', 'published'))
-    patron = forms.ModelChoiceField(queryset=Patron.objects.all().order_by('last_name', 'first_name', 'grade'))
+    book = forms.ModelChoiceField(queryset=Book.objects.all().order_by('title'))
+    patron = forms.ModelChoiceField(queryset=Patron.objects.all().order_by('last_name', 'first_name'))
     
     class Meta:
         model = Checkout
