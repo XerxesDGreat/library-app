@@ -15,6 +15,17 @@
 <div class="general_actions">
 <a href="{% url 'library:patron_create' %}">new patron</a>
 </div>
+<div class="search">
+	<form action="{% url 'library:patron_index' %}" method="GET">
+		<input type="text" name="q" value="{{ search_term }}"/>
+		<input type="submit" value="Search!" />
+		{% for qp_name, qp_value in carryover_query_params.items %}
+		{% if qp_name != 'q' %}
+		<input type="hidden" name="{{ qp_name }}" value="{{ qp_value }}" />
+		{% endif %}
+		{% endfor %}
+	</form>
+</div>
 <table class="listing_table">
 	<thead>
 		<tr>
@@ -45,7 +56,11 @@
 			    {% if patron.is_student %}{{ patron.department }} ({{ patron.grade }}){% else %}{{ patron.patron_type }}{% endif %}
 			</td>
 			<td class="center">
+				{% if return_url %}
+				<a href="{{ return_url }}?patron_id={{ patron.id }}{% if book_id %}&book_id={{ book_id }}{% endif %}">Select</a>
+				{% else %}
                 <a href="{% url 'library:circulation_patron_index' patron.id %}">Circ history</a>
+                {% endif %}
 			</td>
 		</tr>
 		{% empty %}

@@ -110,8 +110,8 @@ class Patron(Person):
 class Checkout(models.Model):
     patron = models.ForeignKey(Patron)
     book = models.ForeignKey(Book)
-    checkout_date = models.DateTimeField()
-    checkin_date = models.DateTimeField(blank=True, null=True)
+    checkout_date = models.DateField()
+    checkin_date = models.DateField(blank=True, null=True)
     
 class Rating(models.Model):
     patron = models.ForeignKey(Patron)

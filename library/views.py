@@ -7,6 +7,7 @@ from library_app.utils import reverse
 from library.forms import BookForm, CheckoutForm#, AuthorForm, PatronForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http.response import HttpResponse
+from django.db.models import Q
     
 #########################################################
 ## Authors
@@ -55,6 +56,7 @@ class BookIndexView(generic.ListView):
         context['added_id'] = self.request.GET.get('added_id')
         context['search_term'] = self.request.GET.get('q')
         context['carryover_query_params'] = self.request.GET.dict()
+        context['patron_id'] = self.request.GET.get('patron_id')
         context['return_url'] = self.request.GET.get('return_url')
         return context
     
@@ -131,14 +133,19 @@ class PatronIndexView(generic.ListView):
     
     def get_context_data(self, **kwargs):
         context = generic.ListView.get_context_data(self, **kwargs)
-        try:
-            context['added_id'] = self.request.GET['added_id']
-        except:
-            pass
+        context['added_id'] = self.request.GET.get('added_id')
+        context['search_term'] = self.request.GET.get('q')
+        context['carryover_query_params'] = self.request.GET.dict()
+        context['book_id'] = self.request.GET.get('book_id')
+        context['return_url'] = self.request.GET.get('return_url')
         return context
     
     def get_queryset(self):
-        return Patron.objects.order_by('type', 'department', 'last_name', 'first_name')
+        search_term = self.request.GET.get('q')
+        queryset = Patron.objects.all().order_by('title')
+        if search_term is not None:
+            queryset = queryset.filter(Q(first_name__icontains=search_term) | Q(last_name__icontains=search_term))
+        return queryset.order_by('type', 'department', 'last_name', 'first_name')
 
 class PatronDetailView(generic.DetailView):
     model = Patron
@@ -191,6 +198,14 @@ class PatronCreateView(generic.CreateView):
     def get_success_url(self):
         return reverse('library:patron_index', query_args={'added_id': self.object.id})
     
+    
+def patron_search(request):
+    query_val = request.GET.get('q')
+    matches = []
+    if query_val is not None:
+        matches = [b.title for b in Book.objects.filter(title__icontains=query_val).order_by('title')]
+    return HttpResponse(json.dumps(matches), content_type='application/json')
+    
 #########################################################
 ## Circulation
 class CirculationIndexView(generic.ListView):
@@ -232,7 +247,6 @@ class CirculationDetailView(generic.UpdateView):
 class CirculationCreateView(generic.CreateView):
     model = Checkout
     form_class = CheckoutForm
-    #fields = ['checkout_date', 'checkin_date', 'book', 'patron']
     template_name = 'circulation/form.html'
     
     def get_context_data(self, **kwargs):
@@ -242,6 +256,10 @@ class CirculationCreateView(generic.CreateView):
             context_data['selected_book'] = Book.objects.get(pk=self.request.GET.get('book_id'))
         except:
             context_data['selected_book'] = None
+        try:
+            context_data['selected_patron'] = Patron.objects.get(pk=self.request.GET.get('patron_id'))
+        except:
+            context_data['selected_patron'] = None
         return context_data
     
     def get_success_url(self):

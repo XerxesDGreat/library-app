@@ -69,7 +69,7 @@
 			</td>
 			<td>
 				{% if return_url %}
-				<a href="{{ return_url }}?book_id={{ book.id }}">Select</a>
+				<a href="{{ return_url }}?book_id={{ book.id }}{% if patron_id %}&patron_id={{ patron_id }}{% endif %}">Select</a>
 				{% endif %}
 			</td>
 		</tr>
