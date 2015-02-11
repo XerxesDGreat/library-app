@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 {% load staticfiles %}
+{% load library_extras %}
 <html>
 	<head>
 		<title>{% block title %}Library App{% endblock %}</title>
@@ -47,7 +48,7 @@
 				</ol>
 				{% endblock %}
 			</div><!--  end div#content -->
-			<footer>Design by <a href="http://nicolas.freezee.org">Nicolas Fafchamps</a></footer>
+			<footer>{% check_for_updates git_updater:update_list %}</footer>
 		</div><!--  end div#container -->
 	</body>
 </html>

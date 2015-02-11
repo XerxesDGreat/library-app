@@ -12,4 +12,4 @@ def reverse(viewname, urlconf = None, args = None, kwargs = None, prefix = None,
     url = django_reverse(viewname, urlconf, args, kwargs, prefix, current_app)
     if query_args:
         url = '%s?%s' % (url, '&'.join(['%s=%s' % (k,v) for k,v in query_args.items()]))
-    return url 
+    return url

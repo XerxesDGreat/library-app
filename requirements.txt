@@ -1,5 +1,6 @@
 Django==1.7.2
 argparse==1.2.1
 pycurl==7.19.5.1
+pytz==2014.10
 titlecase==0.7.2
 wsgiref==0.1.2

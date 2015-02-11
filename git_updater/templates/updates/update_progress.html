@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            function doneWithUpdate() {
+                setTimeout(function() {
+                    window.location.replace('{% url 'git_updater:update_list' %}');
+                }, 5000);
+            }
+        </script>
+    </head>
+    <body>
+        <h2>Currently updating from {{ version_from }} to {{ version_to }}</h2>
+        <h2 style="color: red;">NOTE: DO NOT REFRESH THIS PAGE OR HIT BACK!</h2>
+        <p>This is going to take a while (probably a couple minutes). If you hit refresh, it's going to mess everything all up</p>

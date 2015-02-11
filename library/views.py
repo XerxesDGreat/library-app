@@ -384,4 +384,3 @@ def reports_patron_index(request, **kwargs):
 
 def reports_home_select_patron(request):
     return render_to_response('reports/home.html', {'patrons': Patron.objects.all().order_by('last_name', 'first_name')})
-        

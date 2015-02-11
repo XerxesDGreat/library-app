@@ -69,3 +69,7 @@ target/
 *.swo
 
 .idea/*
+.ve/*
+.DS_Store
+.updater
+backup/*

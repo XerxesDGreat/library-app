@@ -1,0 +1,45 @@
+{% extends 'generic/base.html' %}
+
+
+{% block title %}
+	{{ block.super }} | Available Updates
+{% endblock %}
+
+{% block page_first_header %}
+    Available Updates
+{% endblock %}
+
+{% block content %}
+<h2>
+    Current Version: {{ version }}
+</h2>
+
+<h2>
+    Latest Version: {% if object_list %}{{ object_list.0.tag_name }}{% else %}{{ version }}{% endif %}
+</h2>
+
+{% if object_list %}
+<h2>
+    Available updates and their change lists:
+</h2>
+<dl>
+    {% for change_info in object_list %}
+    <dt>{{ change_info.tag_name }} (created {{ change_info.created_at|date:'DATE_FORMAT' }})</dt>
+    <dd>
+        <ul>
+            {% for change in change_info.body %}
+            {% if change %}
+            <li>{{ change }}</li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </dd>
+    {% endfor %}
+</dl>
+<form action="{% url 'git_updater:do_updates' %}" method="get">
+    <button type="submit">Apply updates!</button> (all data will be backed up during this process)
+</form>
+{% else %}
+<h2>No new releases; you are up to date!</h2>
+{% endif %}
+{% endblock %}
