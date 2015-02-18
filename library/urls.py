@@ -6,6 +6,7 @@ from django.views.generic.base import TemplateView
 urlpatterns = patterns('',
     # author urls
     url(r'^authors/create/', views.AuthorCreateView.as_view(), name='author_add'),
+    url(r'^authors/search/$', views.author_search, name='author_search'),
     url(r'^authors/$', views.AuthorIndexView.as_view(), name='author_index'),
     # book urls
     url(r'^books/(?P<pk>\d+)/update/$', views.BookUpdateView.as_view(), name='book_update'),
@@ -17,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^patrons/(?P<pk>\d+)/$', views.PatronDetailView.as_view(), name='patron_detail'),
     url(r'^patrons/(?P<pk>\d+)/update/$', views.PatronUpdateView.as_view(), name='patron_update'),
     url(r'^patrons/create/$', views.PatronCreateView.as_view(), name='patron_create'),
+    url(r'^patrons/search/$', views.patron_search, name='patron_search'),
     url(r'^patrons/$', views.PatronIndexView.as_view(), name='patron_index'),
     # circulation urls
     url(r'^circulation/(?P<pk>\d+)/$', views.CirculationDetailView.as_view(), name='circulation_detail'),

@@ -8,7 +8,16 @@ from library.forms import BookForm, CheckoutForm#, AuthorForm, PatronForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http.response import HttpResponse
 from django.db.models import Q
-    
+
+
+def _person_search(request, cls):
+    term = request.GET.get('term')
+    matches = []
+    if term is not None:
+        search = Q(first_name__icontains=term) | Q(last_name__icontains=term)
+        matches = [{'label': a.full_name(), 'value': a.full_name(), 'id': a.id} for a in cls.objects.filter(search).order_by('last_name')]
+    return HttpResponse(json.dumps(matches), content_type='application/json')
+
 #########################################################
 ## Authors
 class AuthorIndexView(generic.ListView):
@@ -18,10 +27,8 @@ class AuthorIndexView(generic.ListView):
     
     def get_context_data(self, **kwargs):
         context = generic.ListView.get_context_data(self, **kwargs)
-        try:
-            context['added_id'] = self.request.GET['added_id']
-        except:
-            pass
+        context['added_id'] = self.request.GET.get('added_id')
+        context['return_url'] = self.request.GET.get('return_url')
         return context
     
     def get_queryset(self):
@@ -43,6 +50,9 @@ class AuthorCreateView(generic.CreateView):
     
     def get_success_url(self):
         return reverse('library:author_index', query_args={'added_id': self.object.id})
+
+def author_search(request):
+    return _person_search(request, Author)
 
 #########################################################
 ## Books
@@ -107,21 +117,26 @@ class BookDetailView(generic.DetailView):
 
 class BookCreateView(generic.CreateView):
     model = Book
-    fields = ['title', 'author']
+    form_class = BookForm
+    template_name = 'books/form.html'
     
     def get_context_data(self, **kwargs):
         context_data = generic.CreateView.get_context_data(self, **kwargs)
         context_data['book'] = self.object
+        try:
+            context_data['author'] = Author.objects.get(pk=self.request.GET.get('author_id'))
+        except:
+            context_data['author'] = None
         return context_data
     
     def get_success_url(self):
-        return reverse('library:book_list', query_args={'added_id': self.object.id})
+        return reverse('library:book_index', query_args={'added_id': self.object.id})
     
 def book_title_search(request):
-    query_val = request.GET.get('q')
+    query_val = request.GET.get('term')
     matches = []
     if query_val is not None:
-        matches = [b.title for b in Book.objects.filter(title__icontains=query_val).order_by('title')]
+        matches = [{'label': b.title, 'value': b.title, 'id': b.id} for b in Book.objects.filter(title__icontains=query_val).order_by('title')]
     return HttpResponse(json.dumps(matches), content_type='application/json')
     
 #########################################################
@@ -200,11 +215,7 @@ class PatronCreateView(generic.CreateView):
     
     
 def patron_search(request):
-    query_val = request.GET.get('q')
-    matches = []
-    if query_val is not None:
-        matches = [b.title for b in Book.objects.filter(title__icontains=query_val).order_by('title')]
-    return HttpResponse(json.dumps(matches), content_type='application/json')
+    return _person_search(request, Patron)
     
 #########################################################
 ## Circulation
@@ -217,6 +228,7 @@ class CirculationIndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = generic.ListView.get_context_data(self, **kwargs)
         context['page_title'] = self._get_page_title()
+        a = context['item_list'][1]
         return context
     
     def _get_page_title(self):

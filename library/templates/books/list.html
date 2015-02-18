@@ -53,16 +53,16 @@
 		{% for book in item_list %}
 		<tr>
 			<td class="center">
-				{{ book.control_number }}
+				{{ book.control_number|default:"---" }}
 			</td>
 			<td class="left">
-				<a href='{% url 'library:book_detail' book.id %}'>{{ book.title }} {{ book.subtitle|truncatechars:20 }}</a>
+				<a href="{% url 'library:book_detail' book.id %}">{{ book.title }} {% if book.subtitle %}{{ book.subtitle|truncatechars:20 }}{% endif %}</a>
 			</td>
 			<td class="left">
 				{% if book.author %}{{ book.author.full_name }}{% else %}---{% endif %}
 			</td>
 			<td class="center">
-				{{ book.publish_date }}
+				{{ book.publish_date|default:'---' }}
 			</td>
 			<td class="left">
 				{{ book.series_statement|default:" " }} {{ book.volume_sequential_designation|default:"" }}

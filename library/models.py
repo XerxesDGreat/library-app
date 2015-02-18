@@ -1,8 +1,20 @@
 from django.db import models
 from datetime import datetime
 from django.utils.encoding import smart_text
+import re
 
-class Person(models.Model):
+class LibraryModel(models.Model):
+    def form_display_text(self):
+        raise NotImplementedError
+
+    @classmethod
+    def build_from_value(cls, value):
+        raise NotImplementedError
+
+    class Meta:
+        abstract = True
+
+class Person(LibraryModel):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50, blank=True, null=True)
     
@@ -10,6 +22,25 @@ class Person(models.Model):
         first_name = '' if self.first_name is None else self.first_name
         last_name = '' if self.last_name is None else self.last_name
         return smart_text(" ".join((first_name, last_name)))
+
+    def form_display_text(self):
+        return self.full_name()
+
+    @classmethod
+    def build_from_value(cls, value):
+        pattern = re.compile(r'\s')
+        parts = re.split(pattern, value)
+        fname = parts[0]
+        if len(parts) > 2:
+            lname = ' '.join(parts[1:])
+        elif len(parts) < 2:
+            lname = ''
+        else:
+            lname = parts[1]
+        author = cls(first_name=fname, last_name=lname)
+        author.save()
+        return author
+
     
     def __str__(self):
         return self.full_name()
@@ -24,7 +55,7 @@ class Author(Person):
     pass
     #birthday = models.DateField(blank=True, null=True)
 
-class Book(models.Model):
+class Book(LibraryModel):
     control_number = models.IntegerField(blank=True, null=True)
     isbn = models.CharField(max_length=30, blank=True, null=True)
     local_call_number = models.CharField(max_length=40, blank=True, null=True)
@@ -56,6 +87,17 @@ class Book(models.Model):
         subtitle = '' if self.subtitle is None else self.subtitle
         title = self.title
         return smart_text('%s %s %s' % (title, subtitle, by_stmt))
+
+    def form_display_text(self):
+        return self.full_title()
+
+    @staticmethod
+    def build_from_value(cls, value):
+        '''
+        We NEED two fields on a book in order to create a new one, and since one of them is itself made up of a value
+        requiring two fields, it doesn't make sense to create one here
+        '''
+        return None
     
     def __str__(self):
         return self.full_title()

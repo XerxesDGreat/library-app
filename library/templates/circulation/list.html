@@ -19,9 +19,6 @@
 			<th style="width: 20%;">
 				Check-out date
 			</th>
-			<th style="width: 20%;">
-				Check-in date
-			</th>
 			<th>
 				Holding
 			</th>
@@ -34,10 +31,7 @@
 		{% for circ_entry in item_list %}
 		<tr>
 			<td>
-				<a href="{% url 'library:circulation_detail' circ_entry.id %}">{{ circ_entry.checkout_date|date:"SHORT_DATETIME_FORMAT" }}</a>
-			</td>
-			<td>
-				<a href="{% url 'library:circulation_detail' circ_entry.id %}">{{ circ_entry.checkin_date|date:"SHORT_DATETIME_FORMAT" }}</a>
+				<a href="{% url 'library:circulation_detail' circ_entry.id %}">{{ circ_entry.checkout_date|date:"SHORT_DATE_FORMAT" }}</a>
 			</td>
 			<td>
 				{{ circ_entry.book.title }}

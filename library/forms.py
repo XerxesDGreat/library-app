@@ -6,12 +6,17 @@ Created on Jan 12, 2015
 from django.forms.models import ModelForm
 from library.models import Book, Author, Patron, Checkout
 from django import forms
+from library.widgets import TypeAheadWidget
 
 class BookForm(ModelForm):
-    author = forms.ModelChoiceField(queryset=Author.objects.all().order_by('last_name', 'first_name'))
+    author = forms.ModelChoiceField(queryset=Author.objects.all(), widget=TypeAheadWidget(model=Author))
+
     class Meta:
         model = Book
-        fields = ['title', 'author']
+        fields = ['title', 'author', 'control_number', 'publish_date']
+        widgets = {
+            'publish_date': forms.DateInput(attrs={'class': 'date_picker'}, format='%Y')
+        }
         
 class AuthorForm(ModelForm):
     class Meta:
@@ -24,8 +29,8 @@ class PatronForm(ModelForm):
         fields = ['first_name', 'last_name']
         
 class CheckoutForm(ModelForm):
-    book = forms.ModelChoiceField(queryset=Book.objects.all().order_by('title'))
-    patron = forms.ModelChoiceField(queryset=Patron.objects.all().order_by('last_name', 'first_name'))
+    book = forms.ModelChoiceField(queryset=Book.objects.all(), widget=TypeAheadWidget(model=Book))
+    patron = forms.ModelChoiceField(queryset=Patron.objects.all(), widget=TypeAheadWidget(model=Patron))
     
     class Meta:
         model = Checkout

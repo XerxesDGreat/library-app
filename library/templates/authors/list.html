@@ -25,6 +25,9 @@
 			<th>
 				First Name
 			</th>
+            <th>
+                Actions
+            </th>
 		</tr>
 	</thead>
 	<tbody>
@@ -39,6 +42,11 @@
 			<td>
 				{{ author.first_name }}
 			</td>
+            <td>
+                {% if return_url %}
+                <a href="{{ return_url }}?author_id={{ author.id }}">Select</a>
+                {% endif %}
+            </td>
 		</tr>
 		{% empty %}
 		<tr>

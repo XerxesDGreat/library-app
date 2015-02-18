@@ -1,5 +1,6 @@
 {% extends "generic/base.html" %}
 
+{% load staticfiles %}
 {% block title %}
 	{{ block.super }} | {% if checkout %}Edit Circulation Entry{% else %}Add Circulation Entry{% endif %}
 {% endblock %}
@@ -13,6 +14,7 @@
 	{{ block.super }}
 	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/typeahead.js' %}"></script>
 {% endblock %}
 
 {% block page_first_header %}
@@ -22,46 +24,18 @@
 {% block content %}
     {% url 'library:circulation_create' as circ_create %}
 	<form action="{% if checkout %}{% url 'library:circulation_detail' checkout.id %}{% else %}{{ circ_create }}{% endif %}" method="post">
-		<div class="field{% if form.book.errors %} errors{% endif %}">
-			{% if form.book.errors %}
-			<div class="field_errors">
-				{{ form.book.errors }}
-			</div>
-			{% endif %}
-			<label>Book:</label>
-			{% if selected_book %}
-			{{ selected_book.title }}
-			<input type="hidden" name="book" value="{{ selected_book.id }}" />
-			{% endif %}
-			<a href="{% url 'library:book_index' %}?return_url={{ circ_create|urlencode }}{% if selected_patron %}&patron_id={{ selected_patron.id }}{% endif %}">{% if selected_book %}(change){% else %}choose book{% endif %}</a>
-		</div><!-- end div.field -->
-		
-		<div class="field{% if form.patron.errors %} errors{% endif %}">
-			{% if form.patron.errors %}
-			<div class="field_errors">
-				{{ form.patron.errors %}
-			</div><!-- end div.field_errors -->
-			{% endif %}
-			<label>Patron:</label>
-			{% if selected_patron %}
-			{{ selected_patron.full_name }}
-			<input type="hidden" name="book" value="{{ selected_patron.id }}" />
-			{% endif %}
-			<a href="{% url 'library:patron_index' %}?return_url={{ circ_create|urlencode }}{% if selected_book %}&book_id={{ selected_book.id }}{% endif %}">{% if selected_patron %}(change){% else %}choose patron{% endif %}</a>
-		</div><!-- end div.field -->
+
 	    
 		{% for field in form %}
-            {% if field.html_name != "book" and field.html_name != "patron" %}
-			<div class="field{% if field.errors %} errors{% endif %}">
-				{% if field.errors %}
-				<div class="field_errors">
-				{{ field.errors }}
-				</div>
-				{% endif %}
-			{{ field.label_tag }}
-			{{ field }}
+            <div class="field{% if field.errors %} errors{% endif %}">
+                {% if field.errors %}
+                <div class="field_errors">
+                {{ field.errors }}
+                </div>
+                {% endif %}
+            {{ field.label_tag }}
+            {{ field }}
             </div>
-			{% endif %}
 		{% endfor %}
 		{% csrf_token %}
 		<div class="buttons">
@@ -72,6 +46,8 @@
 	
 	<script type="text/javascript">
 		$(function() {
+		    initAutocomplete('book', '{% url "library:book_search" %}');
+		    initAutocomplete('patron', '{% url "library:patron_search" %}');
 			$(".date_picker").datepicker();
 		});
 	</script>
