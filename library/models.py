@@ -147,16 +147,17 @@ class Patron(Person):
             return self._patron_types[self.type]
         except:
             return 'Other'
-            
 
 class Checkout(models.Model):
     patron = models.ForeignKey(Patron)
     book = models.ForeignKey(Book)
     checkout_date = models.DateField()
     checkin_date = models.DateField(blank=True, null=True)
-    
-class Rating(models.Model):
-    patron = models.ForeignKey(Patron)
-    book = models.ForeignKey(Book)
-    rating = models.IntegerField()
-    comments = models.TextField(blank=True, null=True)
+    rating = models.PositiveSmallIntegerField(blank=True, null=True, choices=[
+        (None, '-- no rating --'),
+        (5, 'Loved it'),
+        (4, 'Liked it'),
+        (3, 'Meh'),
+        (2, 'Not good'),
+        (1, 'Hated it')
+    ])

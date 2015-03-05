@@ -25,6 +25,9 @@
 			<th>
 				Patron
 			</th>
+            <th>
+                Rating
+            </th>
 		</tr>
 	</thead>
 	<tbody>
@@ -39,6 +42,9 @@
 			<td>
 				{{ circ_entry.patron.full_name }} ({{ circ_entry.patron.grade }})
 			</td>
+            <td style="text-align: center;">
+                {% if circ_entry.rating %}{{ circ_entry.rating }}{% else %} -- {% endif %}
+            </td>
 		</tr>
 		{% empty %}
 		<tr>
