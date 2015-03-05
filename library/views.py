@@ -66,6 +66,9 @@ class BookIndexView(generic.ListView):
         context = generic.ListView.get_context_data(self, **kwargs)
         context['added_id'] = self.request.GET.get('added_id')
         context['search_term'] = self.request.GET.get('q')
+        context['by_title'] = int(self.request.GET.get('search_title', 0))
+        context['by_author'] = int(self.request.GET.get('search_author', 0))
+        context['by_genre'] = int(self.request.GET.get('search_genre', 0))
         context['carryover_query_params'] = self.request.GET.dict()
         context['patron_id'] = self.request.GET.get('patron_id')
         context['return_url'] = self.request.GET.get('return_url')
@@ -73,9 +76,19 @@ class BookIndexView(generic.ListView):
     
     def get_queryset(self):
         search_term = self.request.GET.get('q')
+        matches = []
+        q = Q()
+        filters = {
+            'search_title': Q(title__icontains=search_term),
+            'search_author': Q(author__last_name__icontains=search_term) | Q(author__first_name__icontains=search_term),
+            'search_genre': Q(author__topic_icontains=search_term)
+        }
+        for field, filter in filters.iteritems():
+            if int(self.request.GET.get(field, 0)):
+                q = q | filter
         queryset = Book.objects.all().annotate(avg_rating=Avg('checkout__rating'), num_ratings=Count('checkout__rating')).order_by('title')
         if search_term is not None:
-            queryset = queryset.filter(title__icontains=search_term)
+            queryset = queryset.filter(q)
         return queryset
 
 class BookUpdateView(generic.UpdateView):

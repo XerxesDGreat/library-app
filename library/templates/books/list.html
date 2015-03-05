@@ -17,7 +17,10 @@
 </div>
 <div class="search">
 	<form action="{% url 'library:book_index' %}" method="GET">
-		<input type="text" name="q" />
+		<input type="text" name="q" value="{{ search_term }}" />
+        by title<input type="checkbox" name="search_title" value="1"{% if by_title %} checked="checked"{% endif %} />
+        &nbsp;&nbsp;by author<input type="checkbox" name="search_author" value="1"{% if by_author %} checked="checked"{% endif %} />
+        &nbsp;&nbsp;by genre<input type="checkbox" name="search_genre" value="1"{% if by_genre %} checked="checked"{% endif %} />
 		<input type="submit" value="Search!" />
 		{% for qp_name, qp_value in carryover_query_params.items %}
 		{% if qp_name != 'q' %}
