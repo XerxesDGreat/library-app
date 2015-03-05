@@ -34,7 +34,7 @@ class CheckoutForm(ModelForm):
     
     class Meta:
         model = Checkout
-        fields = ['book', 'patron', 'checkout_date']
+        fields = ['book', 'patron', 'checkout_date', 'rating']
         widgets = {
             'checkout_date': forms.DateInput(attrs={'class': 'date_picker'}, format='%m/%d/%Y')
         }

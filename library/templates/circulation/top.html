@@ -1,0 +1,28 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+	{{ block.super }} | Highest Rated Titles
+{% endblock %}
+
+{% block page_first_header %}
+	Highest Rated Titles
+{% endblock %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Avg. Rating</th>
+        <th>Checkouts</th>
+    </tr>
+    {% for b in books %}
+    <tr>
+        <td>{{ b.title }}</td>
+        <td style="text-align: center;">{% if b.avg_rating == None %}--{% else %}{{ b.avg_rating|floatformat:1 }}{% endif %}</td>
+        <td style="text-align: center;">{{ b.checkouts }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

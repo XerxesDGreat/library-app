@@ -8,6 +8,7 @@ from library.forms import BookForm, CheckoutForm#, AuthorForm, PatronForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http.response import HttpResponse
 from django.db.models import Q
+from operator import itemgetter
 
 
 def _person_search(request, cls):
@@ -109,7 +110,8 @@ class BookDetailView(generic.DetailView):
                 if patron_entry.book.id == self.object.id:
                     continue
                 try:
-                    recommended_books[patron_entry.book]['count'] += 1
+                    weighted_amount = 1 if book_entry.rating is None else book_entry.rating - 1.5
+                    recommended_books[patron_entry.book]['count'] += weighted_amount
                 except:
                     recommended_books[patron_entry.book] = {'book': patron_entry.book, 'count': 1}
         context['recommended_book_list'] = [y[1] for y in sorted(recommended_books.items(), key=lambda x: x[1]['count'], reverse=True)]
@@ -175,9 +177,11 @@ class PatronDetailView(generic.DetailView):
                 if patron_entry.patron.id == self.object.id:
                     continue
                 try:
-                    book_co_count[patron_entry.book]['count'] += 1
-                except:
+                    amount = 1 if book_entry.rating is None else book_entry.rating - 1.5
+                    book_co_count[patron_entry.book]['count'] += amount
+                except Exception as e:
                     book_co_count[patron_entry.book] = {'book': patron_entry.book, 'count': 1}
+
         sorted_books = [bc[1] for bc in (sorted(book_co_count.items(), key=lambda book_count_entry: book_count_entry[1]['count']))]
         context['book_recommendations'] = sorted_books
         return context
@@ -292,6 +296,37 @@ class CirculationIndexByPatronView(CirculationIndexView):
         if self.patron is None:
             self.patron = get_object_or_404(Patron, pk=self.kwargs.get('pk'))
         return self.patron
+
+def highest_rated_titles(request, **kwargs):
+    checkouts = Checkout.objects.all()
+    b = {}
+    print 'before loop'
+    for c in checkouts:
+        try:
+            st = b[c.book]
+        except:
+            st = {
+                'title': c.book.title,
+                'checkouts': 0,
+                'total_rating': None,
+                'num_ratings': 0,
+                'avg_rating': None
+            }
+        st['checkouts'] += 1
+        if c.rating is not None:
+            st['num_ratings'] += 1
+            st['total_rating'] = st['total_rating'] + c.rating if st['total_rating'] else float(c.rating)
+            st['avg_rating'] = st['total_rating'] / st['num_ratings']
+
+        b[c.book] = st
+
+    print 'after loop'
+
+    sorted_b = sorted(b.values(), key=itemgetter('avg_rating', 'checkouts'), reverse=True)
+    limit = request.GET.get('limit', 25)
+    context = {'books': sorted_b[:limit]}
+    return render_to_response('circulation/top.html', context)
+
 
 #########################################################
 ## Reports

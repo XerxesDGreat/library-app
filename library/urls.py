@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^patrons/search/$', views.patron_search, name='patron_search'),
     url(r'^patrons/$', views.PatronIndexView.as_view(), name='patron_index'),
     # circulation urls
+    url(r'^circulation/top/$', views.highest_rated_titles, name='circulation_top'),
     url(r'^circulation/(?P<pk>\d+)/$', views.CirculationDetailView.as_view(), name='circulation_detail'),
     url(r'^circulation/create/$', views.CirculationCreateView.as_view(), name='circulation_create'),
     url(r'^circulation/patron/(?P<pk>\d+)/$', views.CirculationIndexByPatronView.as_view(), name='circulation_patron_index'),

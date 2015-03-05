@@ -42,7 +42,7 @@
         <ul>
             {% for book_rec in book_recommendations %}
             <li>
-                <a href="{% url 'library:book_detail' book_rec.book.id %}">{{ book_rec.book.title }} ({{ book_rec.count }})
+                <a href="{% url 'library:book_detail' book_rec.book.id %}">{{ book_rec.book.title }} ({{ book_rec.count }})</a>
             </li>
             {% endfor %}
         </ul>
