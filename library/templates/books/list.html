@@ -41,6 +41,10 @@
 			<th style="width: 10%">
 				Publish date
 			</th>
+            <th style="width: 10%;">
+                Rating<br />
+                (num ratings)
+            </th>
 			<th>
 				Addl info
 			</th>
@@ -64,6 +68,9 @@
 			<td class="center">
 				{{ book.publish_date|default:'---' }}
 			</td>
+            <td class="center">
+                {{ book.avg_rating|floatformat:1|default:'--' }} ({{ book.num_ratings }})
+            </td>
 			<td class="left">
 				{{ book.series_statement|default:" " }} {{ book.volume_sequential_designation|default:"" }}
 			</td>

@@ -21,6 +21,9 @@
 	<div>
 		<em>Book ID:</em> {{ book.id }}
 	</div>
+    <div>
+        <em>Rating:</em> {{ rating_info.avg_rating|floatformat:1|default:'--' }} ({{ rating_info.num_ratings }} ratings)
+    </div>
 	<div>
 		Others also read:<br />
 		{% if recommended_book_list %}

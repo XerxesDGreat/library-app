@@ -13,14 +13,14 @@
 <table>
     <tr>
         <th>Title</th>
-        <th>Avg. Rating</th>
+        <th>Avg. Rating<br />(num ratings)</th>
         <th>Checkouts</th>
     </tr>
     {% for b in books %}
     <tr>
-        <td>{{ b.title }}</td>
-        <td style="text-align: center;">{% if b.avg_rating == None %}--{% else %}{{ b.avg_rating|floatformat:1 }}{% endif %}</td>
-        <td style="text-align: center;">{{ b.checkouts }}</td>
+        <td>{{ b.book__title }}</td>
+        <td style="text-align: center;">{{ b.avg_rating|floatformat:1|default:'--' }} ({{ b.num_ratings }})</td>
+        <td style="text-align: center;">{{ b.num_checkouts }}</td>
     </tr>
     {% endfor %}
 </table>
